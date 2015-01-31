@@ -450,10 +450,13 @@ var resizePizzas = function(size) {
 
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+    var pizzas = document.querySelectorAll(".randomPizzaContainer"),
+        i = pizzas.length;
+
+    while(i--){
+      // newwidth = pizzas[i].offsetWidth + determineDx(pizzas[i], size) + 'px';
+      console.log(determineDx(pizzas[i], size));
+      document.querySelectorAll(".randomPizzaContainer")[i].style.width = pizzas[i].offsetWidth + determineDx(pizzas[i], size) + 'px';
     }
   }
 
@@ -501,11 +504,20 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
+  // Remove anything we can calculate outside of for loop to save some computation time
+  var items = document.querySelectorAll('.mover'),
+      scrollLoc = document.body.scrollTop / 1250,
+      phase1 = 100 * Math.sin(scrollLoc),
+      phase2 = 100 * Math.sin(scrollLoc + 1),
+      phase3 = 100 * Math.sin(scrollLoc + 2),
+      phase4 = 100 * Math.sin(scrollLoc + 3),
+      phase5 = 100 * Math.sin(scrollLoc + 4),
+      phases = [phase1, phase2, phase3, phase4, phase5],
+      i = items.length;         
 
-  var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+  //loop will go on until it reaches to 0. By using while loop, we are avoiding the value comparison for each loop
+  while (i--) { 
+    items[i].style.left = items[i].basicLeft + phases[i%5] + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -525,8 +537,10 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
-    var elem = document.createElement('img');
+  var elem;
+  // we only need to show number of pizza that are visible on the background
+  for (var i = 0; i < 32; i++) {
+    elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
