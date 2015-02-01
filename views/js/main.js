@@ -450,13 +450,15 @@ var resizePizzas = function(size) {
 
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
+    
+    // we don't need these variables to be constantly be called inside the loop. Also the value of the variable newWidth should be the
+    // same through out loop. 
     var pizzas = document.querySelectorAll(".randomPizzaContainer"),
-        i = pizzas.length;
+        i = pizzas.length,
+        newWidth = pizzas[0].offsetWidth + determineDx(pizzas[0], size) + 'px';
 
     while(i--){
-      // newwidth = pizzas[i].offsetWidth + determineDx(pizzas[i], size) + 'px';
-      console.log(determineDx(pizzas[i], size));
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = pizzas[i].offsetWidth + determineDx(pizzas[i], size) + 'px';
+      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newWidth;
     }
   }
 
@@ -517,7 +519,11 @@ function updatePositions() {
 
   //loop will go on until it reaches to 0. By using while loop, we are avoiding the value comparison for each loop
   while (i--) { 
+    //  var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+    // items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    // console.log("original eq: "+items[i].style.left);
     items[i].style.left = items[i].basicLeft + phases[i%5] + 'px';
+    // console.log("modified eq: "+items[i].style.left);
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
