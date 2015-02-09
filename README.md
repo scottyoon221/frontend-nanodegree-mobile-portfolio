@@ -1,8 +1,10 @@
 ### Running Application
 Click on following link:
 [http://scottyoon221.github.io/optimization/](http://scottyoon221.github.io/optimization/)
-
 To go to pizza page, click on Cam's Pizzeria link from the main page.
+
+To view grunt file, click here:
+[https://github.com/scottyoon221/optimization/blob/gh-pages/gruntfile.js](https://github.com/scottyoon221/optimization/blob/gh-pages/gruntfile.js)
 
 
 ### Optimization: pizza.html 
