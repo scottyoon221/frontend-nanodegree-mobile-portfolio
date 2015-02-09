@@ -25,9 +25,6 @@ To go to minified pizza page, click on Cam's Pizzeria link from the main page.
 
 ```bash
 function changePizzaSizes(size) {
-  // we don't need these variables to be constantly be called inside the loop.
-  // Also the value of the variable newWidth should be the
-  // same through out loop.
   var pizzas = document.querySelectorAll(".randomPizzaContainer"),
   i = pizzas.length,
   newWidth = pizzas[0].offsetWidth + determineDx(pizzas[0], size) + 'px';
