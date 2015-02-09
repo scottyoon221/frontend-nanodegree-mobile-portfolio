@@ -6,18 +6,18 @@ To go to minified pizza page, click on Cam's Pizzeria link from the main page.
 
 
 ### Optimization: pizza.html 
-1. pizzeria.jpg file size reduction - The image should look good on Desktop or mobile, but anything beyond that is excessive. Since maximum is can stretch is 720 x 540 resolution, I've used GIMP graphic editing tool to resized it down to match the require resolution and remove metadata to further optimize it.
+1. pizzeria.jpg file size reduction - The image should look good on Desktop or mobile, but anything beyond that is excessive. Since the best viewable resolution on desktop is 720 x 540, I've used GIMP graphic editing tool to resized it to match the require resolution and remove metadata to further optimize it.
 
-1. uncss bootstrap-grid.css and style.css file: Since there are number of unused CSS rules, the unused part was removed by using grunt uncss.
+1. uncss bootstrap-grid.css and style.css file: Since there are number of unused CSS rules, the unused part was removed by grunt uncss.
 
 1. embed bootstrap, and embeded style.css: To reduce the number of client-server roundtrips, stylesheet was embeded. 
 
 1. async embed javascript: while DOM is being constructed we can embed and asynchronously call part of main.js file to build anything below-the-fold content (pizzas menu) and load pizza on the background.
 
-1. folowing files was minified to reduce the file size:
-* pizza.html
-* main.js
-* embeded bootstrap, embeded style.css, embeded part of main.js
+1. following files were minified to reduce the file size:
+  * pizza.html
+  * main.js
+  * embeded bootstrap, embeded style.css, embeded part of main.js
 
 
 ### Optimization: main.js
@@ -25,8 +25,7 @@ To go to minified pizza page, click on Cam's Pizzeria link from the main page.
 
 ```bash
 function changePizzaSizes(size) {
-    
-	// we don't need these variables to be constantly be called inside the loop. Also the value of the variable newWidth should be the
+	// we don't need these variables to be constantly be called inside the loop. // Also the value of the variable newWidth should be the
 	// same through out loop. 
 	var pizzas = document.querySelectorAll(".randomPizzaContainer"),
 	    i = pizzas.length,
@@ -66,7 +65,7 @@ function updatePositions() {
 }
 ```
 
-1. number of loop inside DOMContentLoaded addEventListener: Since it only displays at most 8 pizzas per column and there are 4 rows of pizzas in the screen any more than total of 32 pizzas is excessive.
+1. number of loop inside DOMContentLoaded addEventListener: Since it only displays at most 8 pizzas per column and there are 4 rows of pizzas in the screen, any more than total of 32 pizzas is excessive.
 
 ```bash
 document.addEventListener('DOMContentLoaded', function() {
