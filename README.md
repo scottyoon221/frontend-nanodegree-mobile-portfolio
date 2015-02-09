@@ -2,7 +2,7 @@
 Click on following link:
 [http://scottyoon221.github.io/optimization/](http://scottyoon221.github.io/optimization/)
 
-To go to minified pizza page, click on Cam's Pizzeria link from the main page.
+To go to pizza page, click on Cam's Pizzeria link from the main page.
 
 
 ### Optimization: pizza.html 
@@ -14,10 +14,9 @@ To go to minified pizza page, click on Cam's Pizzeria link from the main page.
 
 1. async embed javascript: while DOM is being constructed we can embed and asynchronously call part of main.js file to build anything below-the-fold content (pizzas menu) and load pizza on the background.
 
-1. following files were minified to reduce the file size:
-  * pizza.html
+1. following file was minified to reduce the file size:
   * main.js
-  * embeded bootstrap, embeded style.css, embeded part of main.js
+  
 
 
 ### Optimization: main.js
