@@ -1,65 +1,80 @@
-## Website Performance Optimization portfolio project
+### Running Application
+Click on following link:
+[http://scottyoon221.github.io/optimization/](http://scottyoon221.github.io/optimization/)
+To go to pizza page, click on Cam's Pizzeria link from the main page.
 
-Your challenge, if you wish to accept it (and we sure hope you will), is to optimize this online portfolio for speed! In particular, optimize the critical rendering path and make this page render as quickly as possible by applying the techniques you've picked up in the [Critical Rendering Path course](https://www.udacity.com/course/ud884).
+To view grunt file, click here:
+[https://github.com/scottyoon221/optimization/blob/gh-pages/gruntfile.js](https://github.com/scottyoon221/optimization/blob/gh-pages/gruntfile.js)
 
-To get started, check out the repository, inspect the code,
 
-### Getting started
+### Optimization: pizza.html 
+1. pizzeria.jpg file size reduction - The image should look good on Desktop or mobile, but anything beyond that is excessive. Since the best viewable resolution on desktop is 720 x 540, I've used GIMP graphic editing tool to resized it to match the require resolution and remove metadata to further optimize it.
 
-Some useful tips to help you get started:
+1. uncss bootstrap-grid.css and style.css file: Since there are number of unused CSS rules, the unused part was removed by grunt uncss.
 
-1. Check out the repository
-1. To inspect the site on your phone, you can run a local server
+1. embed bootstrap, and embeded style.css: To reduce the number of client-server roundtrips, stylesheet was embeded. 
 
-  ```bash
-  $> cd /path/to/your-project-folder
-  $> python -m SimpleHTTPServer 8080
-  ```
+1. async embed javascript: while DOM is being constructed we can embed and asynchronously call part of main.js file to build anything below-the-fold content (pizzas menu) and load pizza on the background.
 
-1. Open a browser and visit localhost:8080
-1. Download and install [ngrok](https://ngrok.com/) to make your local server accessible remotely.
+1. following file was minified to reduce the file size:
+  * main.js
+  
 
-  ``` bash
-  $> cd /path/to/your-project-folder
-  $> ngrok 8080
-  ```
 
-1. Copy the public URL ngrok gives you and try running it through PageSpeed Insights! [More on integrating ngrok, Grunt and PageSpeed.](http://www.jamescryer.com/2014/06/12/grunt-pagespeed-and-ngrok-locally-testing/)
+### Optimization: main.js
+1. changePizzaSizes:  offsetWidth is always the same through out the entire array of pizzas and the same goes for the result of determineDx function. Thus, we can extract these two and calculate outside of the loop.
 
-Profile, optimize, measure... and then lather, rinse, and repeat. Good luck!
+```bash
+function changePizzaSizes(size) {
+  var pizzas = document.querySelectorAll(".randomPizzaContainer"),
+  i = pizzas.length,
+  newWidth = pizzas[0].offsetWidth + determineDx(pizzas[0], size) + 'px';
 
-### Optimization Tips and Tricks
-* [Optimizing Performance](https://developers.google.com/web/fundamentals/performance/ "web performance")
-* [Analyzing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/analyzing-crp.html "analyzing crp")
-* [Optimizing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/optimizing-critical-rendering-path.html "optimize the crp!")
-* [Avoiding Rendering Blocking CSS](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css.html "render blocking css")
-* [Optimizing JavaScript](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript.html "javascript")
-* [Measuring with Navigation Timing](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/measure-crp.html "nav timing api"). We didn't cover the Navigation Timing API in the first two lessons but it's an incredibly useful tool for automated page profiling. I highly recommend reading.
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads.html">The fewer the downloads, the better</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer.html">Reduce the size of text</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization.html">Optimize images</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching.html">HTTP caching</a>
+  while(i--){
+    document.querySelectorAll(".randomPizzaContainer")[i].style.width = newWidth;
+  }
+}
+```
 
-### Customization with Bootstrap
-The portfolio was built on Twitter's <a href="http://getbootstrap.com/">Bootstrap</a> framework. All custom styles are in `dist/css/portfolio.css` in the portfolio repo.
+1. updatePositions: Since the remainder of 5 can only be 0,1,2,3, or 4 and variable i is decrementing in order, we can expect the result will be within the range of 5 different calculation. All we have to do in the loop is to pick the right result from the calculation and add it with items[i].basicLeft
 
-* <a href="http://getbootstrap.com/css/">Bootstrap's CSS Classes</a>
-* <a href="http://getbootstrap.com/components/">Bootstrap's Components</a>
+```bash
+// Moves the sliding background pizzas based on scroll position
+function updatePositions() {
+  frame++;
+  window.performance.mark("mark_start_frame");
+  // Remove anything we can calculate outside of for loop to save some computation time
+  var items = document.querySelectorAll('.mover'),
+      scrollLoc = document.body.scrollTop / 1250,
+      phase1 = 100 * Math.sin(scrollLoc),
+      phase2 = 100 * Math.sin(scrollLoc + 1),
+      phase3 = 100 * Math.sin(scrollLoc + 2),
+      phase4 = 100 * Math.sin(scrollLoc + 3),
+      phase5 = 100 * Math.sin(scrollLoc + 4),
+      phases = [phase1, phase2, phase3, phase4, phase5],
+      i = items.length;
 
-### Sample Portfolios
+  //loop will go on until it reaches to 0. By using while loop, we are avoiding the value comparison for each loop
+  while (i--) {
+    //  var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+    // items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    // console.log("original eq: "+items[i].style.left);
+    items[i].style.left = items[i].basicLeft + phases[i%5] + 'px';
+    // console.log("modified eq: "+items[i].style.left);
+}
+```
 
-Feeling uninspired by the portfolio? Here's a list of cool portfolios I found after a few minutes of Googling.
+1. number of loop inside DOMContentLoaded addEventListener: Since it only displays at most 8 pizzas per column and there are 4 rows of pizzas in the screen, any more than total of 32 pizzas is excessive.
 
-* <a href="http://www.reddit.com/r/webdev/comments/280qkr/would_anybody_like_to_post_their_portfolio_site/">A great discussion about portfolios on reddit</a>
-* <a href="http://ianlunn.co.uk/">http://ianlunn.co.uk/</a>
-* <a href="http://www.adhamdannaway.com/portfolio">http://www.adhamdannaway.com/portfolio</a>
-* <a href="http://www.timboelaars.nl/">http://www.timboelaars.nl/</a>
-* <a href="http://futoryan.prosite.com/">http://futoryan.prosite.com/</a>
-* <a href="http://playonpixels.prosite.com/21591/projects">http://playonpixels.prosite.com/21591/projects</a>
-* <a href="http://colintrenter.prosite.com/">http://colintrenter.prosite.com/</a>
-* <a href="http://calebmorris.prosite.com/">http://calebmorris.prosite.com/</a>
-* <a href="http://www.cullywright.com/">http://www.cullywright.com/</a>
-* <a href="http://yourjustlucky.com/">http://yourjustlucky.com/</a>
-* <a href="http://nicoledominguez.com/portfolio/">http://nicoledominguez.com/portfolio/</a>
-* <a href="http://www.roxannecook.com/">http://www.roxannecook.com/</a>
-* <a href="http://www.84colors.com/portfolio.html">http://www.84colors.com/portfolio.html</a>
+```bash
+document.addEventListener('DOMContentLoaded', function() {
+	...
+
+	for (var i = 0; i < 32; i++) {
+		...
+	}
+}
+```
+
+
+
